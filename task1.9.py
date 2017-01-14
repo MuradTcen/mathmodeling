@@ -1,4 +1,4 @@
-import math
+﻿import math
 import scipy.integrate as spint 
 import numpy as np
 from numpy import polynomial as pn 
@@ -10,10 +10,13 @@ from numpy import polynomial as pn
 угольный.
 http://festival.1september.ru/articles/649134/
 
+A-A width
+B-B width
+C-height
+R - находим из равенства объемов прямоугольного и сферического аквариумов
+R0 - плотность воды
+G - ускорение свободного падения
 '''
-#A-A width
-#B-B width
-#C-height
 A=0.3 
 B=0.75
 C=2
@@ -24,17 +27,25 @@ G=9.8
 
 
 def simpson_i(f,a,b,n):
+    '''
+    метод приближенного вычисления интеграла по формуле Симпсона
+    '''
     k=(b-a)/2
-    return k * (sum(2 * f(a + x * k) if x % 2 == 0 else 4 * f(a + x*k) for x in range(1, n)) + f(a) + f(b)) / 3
-    
+    return k * (sum(2 * f(a + x * k) if x % 2 == 0 else 4 * f(a + x*k) for x in range(1, n)) + f(a) + f(b)) / 3    
     
     
 def trapeze_i(f,a,b,n):
+    '''
+    приближенное вычисление интеграла методом трапеции
+    '''
     k=(b-a)/2
     return ((f(a) + f(b)) / 2 + sum(f(x) for x in np.arange(a + k, b, k))) * k
     
     
 def gausse_i(f,a,b,n):
+    '''
+    метод приближенного вычисления интеграла по формуле Гаусса
+    '''
     t_list, a_list = pn.legendre.leggauss(n)
     return sum(a_i * f((b + a) / 2 + t_i * (b - a) / 2) for a_i, t_i in zip(a_list, t_list)) * (b - a)/2
  
@@ -50,6 +61,10 @@ def integr_trap(a,b,n,f):
 #print (integr_trap(0,1,10,math.sin()))
 
 #-------------------- 4 CUBE \/
+# блок функций вычислясляющих давление на стенки 
+# прямоугольного аквариума, используя различные методы
+# вычисления интегралов
+# n - число отрезков
 n=100
 def f_a(c):
     return RO*G*c*B*c
@@ -85,6 +100,9 @@ def calc_pressure_cub_bottom(c):
 #-------------------- 4 CUBE /\
 
 #-------------------- 4 SPHERE \/
+# блок функций вычисляющий даление на дно и стороны
+# сферического аквариума с помощью библиотечной
+# функции интегрирования
 get_rad=(lambda h: math.pi*(2*h*R-h*h)*RO*G)
 get_df=(lambda x: math.pi*RO*G*((2*R*x-x*x)**0.5)*(2*R-x)*2)
  
@@ -99,7 +117,8 @@ def calc_pressure_sphere_bottom(R):
 
 get_h=(lambda a,b,n: (b-a)/n)
 
-#-------------------- 4 SPHERE /\    
+#-------------------- 4 SPHERE /\ 
+# блок выхлопа    
 print ('bottom:',calc_pressure_cub_bottom(C)) 
 print ('a-side:',calc_pressure_cub_a_side(C)) 
 print ('a-side simpson :',calc_pressure_cub_a_side_s_i(C))  
@@ -107,5 +126,6 @@ print ('a-side trapeeze',calc_pressure_cub_a_side_t_i(C))
 print ('a-side gausse',calc_pressure_cub_a_side_g_i(C))  
 print ('b-side',calc_pressure_cub_b_side(C))   
 print ('sphere pressure',calc_pressure_sphere_sides(R))
+print ('sphere bottom',calc_pressure_sphere_bottom(R))
 
     
